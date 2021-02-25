@@ -207,3 +207,57 @@ dn_lq_tx_mindist %>%
 ```
 
 The minimum distance (0.0160) is the lowest out of all three states so far. The maximum (60.5820) and mean (5.7918) are between Alaska (lower) and North Carolina (higher). In the graph, we see a cluster on the left with distances above 30. We also see that most of the distances are below 20.
+
+### Exercise 11
+
+```{r den_IL}
+dn_il <- dennys %>%
+  filter(state == "IL")
+nrow(dn_il)
+```
+There are 56 dennys in Illinois.
+
+```{r lq_IL}
+lq_il <- laquinta %>%
+  filter(state == "IL")
+nrow(lq_il)
+```
+
+There are 17 laquintas in Illinois.
+
+```{r il_join}
+dn_lq_il <- full_join(dn_il, lq_il, by = "state")
+dn_lq_il
+```
+
+
+```{r il_distance}
+dn_lq_il <- dn_lq_il %>%
+  mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+
+```{r il_min_dist}
+dn_lq_il_mindist <- dn_lq_il %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance))
+```
+
+
+```{r il_plot}
+dn_lq_tx_mindist %>%
+ggplot(mapping = aes(y = closest, x = reorder(address.x, -closest))) +
+  geom_bar(stat="identity") +
+  labs(title = "Closest dennys and laquintas-Illinois", y = "Closest", x = "Address")+
+  scale_colour_grey(start = 0, end = .7) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r il_summary}
+dn_lq_il_mindist %>%
+  summary(closest)
+```
+
+The minimum distance (0.149) is higher than Texas, but lower than Alaska and North Carolina. The maximum (113.267) and mean (23.212) are greater than Alaska and Texas but lower than North Carolina.. In the graph, we see a cluster on the left with distances above 40. We also see that most of the distances are below 10.
+
