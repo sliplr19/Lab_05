@@ -52,3 +52,53 @@ There are 6 observations in the dataframe. The variables are address, city, stat
 ### Exercise 5
 
 We use mutate() to add a new variable to the dataframe while keeping the existing variables.
+
+```{r haversine}
+haversine <- function(long1, lat1, long2, lat2, round = 3) {
+  # convert to radians
+  long1 = long1 * pi / 180
+  lat1  = lat1  * pi / 180
+  long2 = long2 * pi / 180
+  lat2  = lat2  * pi / 180
+  
+  R = 6371 # Earth mean radius in km
+  
+  a = sin((lat2 - lat1)/2)^2 + cos(lat1) * cos(lat2) * sin((long2 - long1)/2)^2
+  d = R * 2 * asin(sqrt(a))
+  
+  return( round(d,round) ) # distance in km
+}
+
+```
+
+###Exercise 6
+
+```{r distance}
+dn_lq_ak <- dn_lq_ak %>%
+  mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+### Exercise 7
+```{r min_dist}
+dn_lq_ak_mindist <- dn_lq_ak %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance))
+```
+
+### Exercise 8
+
+```{r alaska_plot}
+dn_lq_ak_mindist %>%
+ggplot(mapping = aes(y = closest, x = reorder(address.x, -closest))) +
+  geom_bar(stat="identity") +
+  labs(title = "Closest dennys and laquintas", y = "Closest", x = "Address")+
+  scale_colour_grey(start = 0, end = .7) +
+  theme_bw()
+```
+
+```{r alaska_summary}
+dn_lq_ak_mindist %>%
+  summary(closest)
+```
+
+The mean closest distance is 4.410. The minimym is 2.035 and the maximum is 5.998. The distribution has two bars that are nearly equal with one that is much smaller. As I have it arranged, it's skewed to the right, but that's an artifact of how I've arranged the data.
