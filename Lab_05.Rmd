@@ -73,13 +73,13 @@ haversine <- function(long1, lat1, long2, lat2, round = 3) {
 
 ###Exercise 6
 
-```{r distance}
+```{r ak_distance}
 dn_lq_ak <- dn_lq_ak %>%
   mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
 ```
 
 ### Exercise 7
-```{r min_dist}
+```{r ak_min_dist}
 dn_lq_ak_mindist <- dn_lq_ak %>%
   group_by(address.x) %>%
   summarise(closest = min(distance))
@@ -91,7 +91,7 @@ dn_lq_ak_mindist <- dn_lq_ak %>%
 dn_lq_ak_mindist %>%
 ggplot(mapping = aes(y = closest, x = reorder(address.x, -closest))) +
   geom_bar(stat="identity") +
-  labs(title = "Closest dennys and laquintas", y = "Closest", x = "Address")+
+  labs(title = "Closest dennys and laquintas-Alaska", y = "Closest", x = "Address")+
   scale_colour_grey(start = 0, end = .7) +
   theme_bw()
 ```
@@ -102,3 +102,108 @@ dn_lq_ak_mindist %>%
 ```
 
 The mean closest distance is 4.410. The minimym is 2.035 and the maximum is 5.998. The distribution has two bars that are nearly equal with one that is much smaller. As I have it arranged, it's skewed to the right, but that's an artifact of how I've arranged the data.
+
+### Exercise 9
+
+```{r den_NC}
+dn_nc <- dennys %>%
+  filter(state == "NC")
+nrow(dn_nc)
+```
+There are 28 dennys in North Carolina.
+
+```{r lq_NC}
+lq_nc <- laquinta %>%
+  filter(state == "NC")
+nrow(lq_nc)
+```
+
+There are 12 laquintas in North Carolina.
+```{r nc_join}
+dn_lq_nc <- full_join(dn_nc, lq_nc, by = "state")
+dn_lq_nc
+```
+
+
+```{r nc_distance}
+dn_lq_nc <- dn_lq_nc %>%
+  mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+```{r nc_min_dist}
+dn_lq_nc_mindist <- dn_lq_nc %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance))
+```
+
+
+
+```{r nc_plot}
+dn_lq_nc_mindist %>%
+ggplot(mapping = aes(y = closest, x = reorder(address.x, -closest))) +
+  geom_bar(stat="identity") +
+  labs(title = "Closest dennys and laquintas-North Carolina", y = "Closest", x = "Address")+
+  scale_colour_grey(start = 0, end = .7) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r nc_summary}
+dn_lq_nc_mindist %>%
+  summary(closest)
+```
+
+The minimum distance is 1.779 which is less than the minimum distance for Alaska. The maximum distance is 187.935 and the mean is 65.444 which are both much greater than the corresponding Alaska values. The graph is skewed to the right which is again an artifact of the code. There's a cluster of distances above 150, and most of the data is below 75.
+
+### Exercise 10
+
+```{r den_TX}
+dn_tx <- dennys %>%
+  filter(state == "TX")
+nrow(dn_tx)
+```
+There are 200 dennys in Texas.
+
+```{r lq_TX}
+lq_tx <- laquinta %>%
+  filter(state == "TX")
+nrow(lq_tx)
+```
+
+There are 237 laquintas in Texas.
+
+```{r tx_join}
+dn_lq_tx <- full_join(dn_tx, lq_tx, by = "state")
+dn_lq_tx
+```
+
+
+```{r tx_distance}
+dn_lq_tx <- dn_lq_tx %>%
+  mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+
+```{r tx_min_dist}
+dn_lq_tx_mindist <- dn_lq_tx %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance))
+```
+
+
+```{r tx_plot}
+dn_lq_tx_mindist %>%
+ggplot(mapping = aes(y = closest, x = reorder(address.x, -closest))) +
+  geom_bar(stat="identity") +
+  labs(title = "Closest dennys and laquintas-Texas", y = "Closest", x = "Address")+
+  scale_colour_grey(start = 0, end = .7) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r tx_summary}
+dn_lq_tx_mindist %>%
+  summary(closest)
+```
+
+The minimum distance (0.0160) is the lowest out of all three states so far. The maximum (60.5820) and mean (5.7918) are between Alaska (lower) and North Carolina (higher). In the graph, we see a cluster on the left with distances above 30. We also see that most of the distances are below 20.
