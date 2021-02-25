@@ -18,3 +18,37 @@ library(wesanderson)
 load("G:\\My Drive\\DataScience\\Lab_04\\data\\dennys.rda")
 load("G:\\My Drive\\DataScience\\Lab_04\\data\\laquinta.rda")
 ```
+
+### Exercise 1
+
+```{r den_alaska}
+dn_ak <- dennys %>%
+  filter(state == "AK")
+nrow(dn_ak)
+```
+There are 3 dennys in Alaska.
+
+### Exercise 2
+```{r lq_alaska}
+lq_ak <- laquinta %>%
+  filter(state == "AK")
+nrow(lq_ak)
+```
+There are 2 laquintas in alaska.
+
+### Exercise 3
+
+We need to calculate 6 distances.
+
+### Exercise 4 
+
+```{r alaska_join}
+dn_lq_ak <- full_join(dn_ak, lq_ak, by = "state")
+dn_lq_ak
+```
+
+There are 6 observations in the dataframe. The variables are address, city, state, zip, longitude, latitude for both the x and the y datasets.
+
+### Exercise 5
+
+We use mutate() to add a new variable to the dataframe while keeping the existing variables.
